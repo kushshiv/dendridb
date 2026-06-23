@@ -8,7 +8,7 @@ Read `dendridb_overview.md` first. Treat that file as the product vision and arc
 
 ## Master prompt
 
-Build a production-quality open-source project called **DendriDB**, a Python-first brain-inspired memory database for AI systems.
+Build a production-quality open-source project called **DendriDB**, a brain-inspired memory database for AI systems.
 
 This project must be implemented **incrementally in milestones**, not all at once. Each milestone must produce a working, testable, documented state of the system. The implementation should favor clarity, maintainability, and good developer experience over premature complexity.
 
