@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dendridb"
+version = "0.1.0"
+description = "A brain-inspired memory database for AI systems"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "DendriDB Contributors" }]
+keywords = ["memory", "ai", "database", "vector", "episodic"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "alembic>=1.14.0",
+    "fastapi>=0.115.0",
+    "greenlet>=3.1.0",
+    "psycopg[binary]>=3.2.0",
+    "pydantic-settings>=2.6.0",
+    "sqlalchemy>=2.0.36",
+    "typer>=0.15.0",
+    "uvicorn[standard]>=0.32.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.28.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+]
+
+[project.scripts]
+dendridb = "dendridb.cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dendridb"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/dendridb", "alembic", "alembic.ini"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "unit: unit tests",
+    "integration: integration tests requiring database",
+    "e2e: end-to-end tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+]
+ignore = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["dendridb"]
+
+[tool.coverage.run]
+source = ["dendridb"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+]
