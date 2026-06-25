@@ -2,21 +2,28 @@
 
 PYTHON ?= python3
 VENV ?= .venv
-BIN = $(VENV)/bin
-PIP = $(BIN)/pip
-PYTEST = $(BIN)/pytest
-RUFF = $(BIN)/ruff
-UVICORN = $(BIN)/uvicorn
-ALEMBIC = $(BIN)/alembic
+
+# Use the local virtualenv when present; otherwise use the active Python (e.g. CI).
+ifeq ($(wildcard $(VENV)/bin/python),)
+  PY := $(PYTHON)
+else
+  PY := $(VENV)/bin/python
+endif
+
+PIP = $(PY) -m pip
+PYTEST = $(PY) -m pytest
+RUFF = $(PY) -m ruff
+UVICORN = $(PY) -m uvicorn
+ALEMBIC = $(PY) -m alembic
 
 setup: $(VENV)/bin/activate
-	$(PIP) install -e ".[dev]"
+	$(VENV)/bin/pip install -e ".[dev]"
 	@if [ ! -f .env ]; then cp .env.example .env; echo "Created .env from .env.example"; fi
 
 $(VENV)/bin/activate: pyproject.toml
 	$(PYTHON) -m venv $(VENV)
-	$(PIP) install --upgrade pip
-	$(PIP) install -e ".[dev]"
+	$(VENV)/bin/pip install --upgrade pip
+	$(VENV)/bin/pip install -e ".[dev]"
 
 dev: setup
 	$(UVICORN) dendridb.api.main:app --reload --host $${API_HOST:-0.0.0.0} --port $${API_PORT:-8000}
