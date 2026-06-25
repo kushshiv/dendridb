@@ -49,7 +49,7 @@ Optional: set `E2E_BASE_URL` (default `http://localhost:8000`).
 
 ## CI
 
-GitHub Actions runs lint, unit tests, integration tests with a PostgreSQL service container, and Docker build checks on every push and pull request.
+GitHub Actions mirrors local setup: each job runs `make setup`, then `make lint`, `make test-unit`, or `make migrate` + `make test-integration` (with a PostgreSQL service container). A Docker build check runs on every push and pull request.
 
 ## Writing tests
 
