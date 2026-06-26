@@ -5,13 +5,15 @@
 ```bash
 cp .env.example .env
 # Edit .env for production credentials
-make docker-up
+make docker-up-all
 ```
 
 This starts:
 
 - **postgres** — PostgreSQL 16 with pgvector on port 5432
 - **api** — DendriDB FastAPI service on port 8000
+
+For local development with hot reload, use `make docker-up` (Postgres only) and `make dev` instead.
 
 ## Health checks
 

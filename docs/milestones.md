@@ -18,12 +18,17 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - GitHub Actions CI
 - Open-source repo files and docs
 
-## Milestone 1 — Basic memory records
+## Milestone 1 — Basic memory records ✅
 
-- `MemoryRecord` schema and table
-- CRUD/list API endpoints
-- Namespace, metadata, timestamps, provenance
-- Filters and tests
+**Goal:** Store and retrieve generic memory records.
+
+**Delivered:**
+
+- `MemoryRecord` SQLAlchemy model and migration
+- `POST /memories`, `GET /memories/{id}`, `GET /memories`
+- Namespace, metadata, provenance, timestamps
+- Filters by namespace, actor, type, and source
+- Unit and integration tests
 
 ## Milestone 2 — Working memory
 

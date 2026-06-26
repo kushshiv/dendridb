@@ -21,8 +21,8 @@ DendriDB is organized as a modular Python application with clear separation betw
 | `dendridb.api` | HTTP routes and application factory |
 | `dendridb.config` | Settings and environment configuration |
 | `dendridb.core` | Database engine and session management |
-| `dendridb.models` | SQLAlchemy models |
-| `dendridb.services` | Business logic |
+| `dendridb.models` | SQLAlchemy models (`MemoryRecord`, etc.) |
+| `dendridb.services` | Business logic (memory record CRUD) |
 | `dendridb.memory` | Memory layer abstractions |
 | `dendridb.ranking` | Hybrid retrieval ranking |
 | `dendridb.workers` | Background consolidation jobs |
