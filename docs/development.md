@@ -11,7 +11,7 @@
 ```bash
 make setup
 cp .env.example .env
-make docker-up
+make docker-up    # PostgreSQL only
 make migrate
 ```
 
@@ -21,7 +21,13 @@ make migrate
 make dev
 ```
 
-This starts Uvicorn with hot reload on port 8000.
+This starts Uvicorn with hot reload on port 8000. Do **not** run `make docker-up-all` at the same time — both bind to port 8000.
+
+To run the full stack in Docker instead (no hot reload):
+
+```bash
+make docker-up-all
+```
 
 ## Code quality
 
