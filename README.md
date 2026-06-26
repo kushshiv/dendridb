@@ -4,7 +4,7 @@ A brain-inspired memory database for AI systems.
 
 DendriDB is not a plain vector store or chat history tool. It is a memory architecture inspired by the brain at a systems level: encoding, working memory, episodic memory, semantic memory, association, consolidation, cue-based recall, and forgetting.
 
-This repository is built incrementally in milestones. **Milestone 0** provides the project foundation: FastAPI, PostgreSQL, configuration, migrations, tests, and local Docker development.
+This repository is built incrementally in milestones. **Milestone 1** adds the first memory layer: create, read, and list generic memory records.
 
 ## Quick start
 
@@ -48,6 +48,55 @@ Example response:
 }
 ```
 
+### Memory records
+
+```bash
+# Create
+curl -X POST http://localhost:8000/memories \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","content":"Hello from DendriDB"}'
+
+# List
+curl "http://localhost:8000/memories?namespace=demo"
+```
+
+See [docs/api.md](docs/api.md) for full API details.
+
+### Troubleshooting
+
+**`POST /memories` fails / `Connection refused` on port 5432**
+
+The API needs PostgreSQL running. `make dev` alone only starts the FastAPI server.
+
+1. Start Docker Desktop
+2. Run:
+
+```bash
+make docker-up
+make migrate
+```
+
+3. Confirm health shows database ok:
+
+```bash
+curl http://localhost:8000/health
+```
+
+You should see `"checks": {"database": "ok"}`. Then retry your `curl` to `/memories`.
+
+**`make dev` fails with `Address already in use` on port 8000**
+
+`make docker-up` is for local development and starts **PostgreSQL only**. If the API container is already running on port 8000, stop it:
+
+```bash
+docker compose stop api
+# or reset the stack:
+make docker-down && make docker-up
+make dev
+```
+
+Alternatively, skip `make dev` and use the Docker API: `make docker-up-all` (API at port 8000, no hot reload).
+
 ## Development
 
 | Command | Description |
@@ -59,7 +108,8 @@ Example response:
 | `make test` | Run unit and integration tests |
 | `make test-unit` | Run unit tests only |
 | `make test-integration` | Run integration tests (requires PostgreSQL) |
-| `make docker-up` | Start PostgreSQL and API via Docker Compose |
+| `make docker-up` | Start PostgreSQL only (for local `make dev`) |
+| `make docker-up-all` | Start PostgreSQL + API in Docker |
 | `make docker-down` | Stop Docker services |
 | `make migrate` | Apply Alembic migrations |
 | `make clean` | Remove build artifacts and virtualenv |

@@ -1,4 +1,4 @@
-.PHONY: setup dev fmt lint test test-unit test-integration test-e2e docker-up docker-down seed benchmark clean migrate
+.PHONY: setup dev fmt lint test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark clean migrate
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -26,6 +26,8 @@ $(VENV)/bin/activate: pyproject.toml
 	$(VENV)/bin/pip install -e ".[dev]"
 
 dev: setup
+	@$(PY) -c "import asyncio; from dendridb.core.database import check_database_connection; raise SystemExit(0 if asyncio.run(check_database_connection()) else 1)" \
+		|| echo "WARNING: PostgreSQL is not reachable on $$(grep POSTGRES_PORT .env 2>/dev/null | cut -d= -f2 || echo 5432). Run 'make docker-up' then 'make migrate' before using /memories."
 	$(UVICORN) dendridb.api.main:app --reload --host $${API_HOST:-0.0.0.0} --port $${API_PORT:-8000}
 
 fmt:
@@ -48,6 +50,9 @@ test-e2e:
 	$(PYTEST) tests/e2e -m e2e -v
 
 docker-up:
+	docker compose up -d postgres
+
+docker-up-all:
 	docker compose up -d --build
 
 docker-down:
