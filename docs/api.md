@@ -183,6 +183,51 @@ Retrieve episode metadata including `event_count`.
 
 List episodes with optional filters: `namespace`, `session_id`, `task_id`, `actor_id`.
 
+### `POST /semantic-memory`
+
+Create a semantic memory directly. Returns `409` if an active record already exists for the same `namespace` + `key`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Tenant or namespace |
+| `key` | string | yes | Stable fact identifier within namespace |
+| `content` | string | yes | Fact content |
+| `confidence` | float | no | 0.0–1.0, defaults to `0.5` |
+| `actor_id` | string | no | Actor identifier |
+| `source` | string | no | Origin of the fact |
+| `metadata` | object | no | Arbitrary JSON metadata |
+| `provenance` | object | no | Traceability details |
+| `evidence` | array | no | Links to supporting sources |
+
+Each evidence item:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `source_type` | string | yes | `memory_record`, `episode`, or `episodic_event` |
+| `source_id` | UUID | yes | ID of the supporting record |
+
+### `POST /semantic-memory/promote`
+
+Promote knowledge into semantic memory with merge/version rules:
+
+- **created** — no active fact for the key
+- **merged** — same content; confidence increases, evidence links deduplicated
+- **versioned** — conflicting content; old record marked `superseded`, new version created
+
+Request body matches `POST /semantic-memory`.
+
+### `GET /semantic-memory/{memory_id}`
+
+Retrieve a semantic memory including `evidence_count`, `version`, and `status`.
+
+### `GET /semantic-memory/{memory_id}/evidence`
+
+List evidence links for a semantic memory.
+
+### `GET /semantic-memory`
+
+List semantic memories with optional filters: `namespace`, `key`, `actor_id`, `active_only` (default `true`).
+
 ## Interactive docs
 
 When running locally:
@@ -222,4 +267,11 @@ curl -X POST http://localhost:8000/episodes/<episode-id>/events \
   -d '{"content":"User asked about billing","source":"chat","provenance":{"turn":1}}'
 
 curl http://localhost:8000/episodes/<episode-id>/replay
+
+# Semantic memory: promote a durable fact with episode evidence
+curl -X POST http://localhost:8000/semantic-memory/promote \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","key":"user-theme","content":"User prefers dark mode","confidence":0.85,"evidence":[{"source_type":"episode","source_id":"<episode-id>"}]}'
+
+curl "http://localhost:8000/semantic-memory?namespace=demo&active_only=true"
 ```

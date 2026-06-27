@@ -7,7 +7,10 @@ from sqlalchemy import text
 from dendridb.api.main import create_app
 from dendridb.core.database import Base, get_engine, get_session_factory
 
-EPISODIC_TABLES = "episodic_events, episodes, working_memory_items, memory_records"
+INTEGRATION_TABLES = (
+    "semantic_evidence, semantic_memories, episodic_events, episodes, "
+    "working_memory_items, memory_records"
+)
 
 
 def integration_enabled() -> bool:
@@ -25,7 +28,7 @@ async def integration_client():
 
     session_factory = get_session_factory()
     async with session_factory() as session:
-        await session.execute(text(f"TRUNCATE TABLE {EPISODIC_TABLES}"))
+        await session.execute(text(f"TRUNCATE TABLE {INTEGRATION_TABLES}"))
         await session.commit()
 
     app = create_app()
@@ -34,5 +37,5 @@ async def integration_client():
         yield client
 
     async with session_factory() as session:
-        await session.execute(text(f"TRUNCATE TABLE {EPISODIC_TABLES}"))
+        await session.execute(text(f"TRUNCATE TABLE {INTEGRATION_TABLES}"))
         await session.commit()
