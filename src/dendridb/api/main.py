@@ -9,6 +9,7 @@ from dendridb.api.routes import (
     episodes,
     health,
     memories,
+    recall,
     semantic_memory,
     working_memory,
 )
@@ -37,6 +38,7 @@ def create_app() -> FastAPI:
     application.include_router(episodes.router)
     application.include_router(semantic_memory.router)
     application.include_router(associations.router)
+    application.include_router(recall.router)
     return application
 
 

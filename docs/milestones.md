@@ -80,9 +80,17 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - Traversal deduplication and weight-based ordering
 - Unit and integration tests
 
-## Milestone 6 — Hybrid retrieval
+## Milestone 6 — Hybrid retrieval ✅
 
-- pgvector embeddings and hybrid ranking
+**Goal:** Improve recall quality with embeddings and hybrid ranking.
+
+**Delivered:**
+
+- pgvector embeddings on memory records (auto-generated on create)
+- Configurable hybrid ranking (similarity, recency, salience, association)
+- `POST /recall` with explainable factor breakdown
+- `POST /recall/reindex` for embedding backfill
+- Unit tests for ranking/embeddings and integration recall scenarios
 
 ## Milestone 7 — Consolidation
 

@@ -24,6 +24,7 @@ async def integration_client():
 
     engine = get_engine()
     async with engine.begin() as connection:
+        await connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await connection.run_sync(Base.metadata.create_all)
 
     session_factory = get_session_factory()

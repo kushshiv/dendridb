@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dendridb.api.schemas.memory_record import MemoryRecordCreate
 from dendridb.models.memory_record import MemoryRecord
+from dendridb.services.recall import set_memory_embedding
 
 
 class MemoryRecordFilters:
@@ -54,6 +55,8 @@ async def create_memory_record(
         salience=payload.salience,
     )
     session.add(record)
+    await session.flush()
+    await set_memory_embedding(session, record)
     await session.commit()
     await session.refresh(record)
     return record
