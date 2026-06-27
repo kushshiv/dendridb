@@ -6,11 +6,11 @@ See also the root [dendridb_overview.md](../dendridb_overview.md) for the full p
 
 ## Current status
 
-**Milestone 4 (Semantic memory)** is complete. The project provides:
+**Milestone 5 (Association layer)** is complete. The project provides:
 
-- FastAPI HTTP API with health, memory, working memory, episodic, and semantic endpoints
+- FastAPI HTTP API with health, memory, working memory, episodic, semantic, and association endpoints
 - PostgreSQL via Docker Compose (with pgvector image for future milestones)
-- Durable records, session-scoped working memory, ordered episodic events, and semantic facts with evidence
+- Durable records, session-scoped working memory, ordered episodic events, semantic facts, and memory associations
 - Configuration via environment variables
 - Alembic migrations
 - Pytest test suite
@@ -26,7 +26,7 @@ Future milestones will add:
 2. ~~Working memory~~ ✅
 3. ~~Episodic memory~~ ✅
 4. ~~Semantic memory~~ ✅
-5. Association graph
+5. ~~Association graph~~ ✅
 6. Hybrid retrieval
 7. Consolidation workers
 8. Forgetting and decay

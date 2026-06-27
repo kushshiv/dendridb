@@ -67,9 +67,18 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - List, get, and evidence endpoints with active-only filtering
 - Unit tests for promotion rules and integration tests
 
-## Milestone 5 — Association layer
+## Milestone 5 — Association layer ✅
 
-- Graph edges between memories
+**Goal:** Connect related memories into an explorable graph.
+
+**Delivered:**
+
+- `MemoryAssociation` model and migration
+- Manual create and metadata/content auto-linking
+- Edge types, weights, and explanations
+- Related-memory retrieval with depth-limited traversal
+- Traversal deduplication and weight-based ordering
+- Unit and integration tests
 
 ## Milestone 6 — Hybrid retrieval
 

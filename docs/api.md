@@ -228,6 +228,50 @@ List evidence links for a semantic memory.
 
 List semantic memories with optional filters: `namespace`, `key`, `actor_id`, `active_only` (default `true`).
 
+### `POST /associations`
+
+Create a directed association between two memory nodes.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Tenant or namespace |
+| `source_type` | string | yes | `memory_record`, `episode`, `episodic_event`, or `semantic_memory` |
+| `source_id` | UUID | yes | Source node ID |
+| `target_type` | string | yes | Target node type |
+| `target_id` | UUID | yes | Target node ID |
+| `edge_type` | string | no | Defaults to `related` |
+| `weight` | float | no | 0.0–1.0, defaults to `0.5` |
+| `explanation` | string | no | Human-readable link reason |
+| `metadata` | object | no | Arbitrary JSON metadata |
+
+### `POST /associations/auto-link`
+
+Automatically create association edges using metadata overlap and/or token-based content similarity.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Namespace to scan |
+| `source_type` | string | no | Limit to one source node |
+| `source_id` | UUID | no | Source node ID when scoped |
+| `metadata_match` | boolean | no | Defaults to `true` |
+| `content_similarity` | boolean | no | Defaults to `true` |
+| `similarity_threshold` | float | no | Defaults to `0.3` |
+| `limit` | integer | no | Max links per source, defaults to `20` |
+
+### `GET /associations/related`
+
+Retrieve related memories from a starting node. Results are ordered by path weight and include relationship explanations.
+
+Query params: `namespace`, `source_type`, `source_id`, `depth` (default `1`), `min_weight` (default `0.1`), `limit`.
+
+### `GET /associations/{association_id}`
+
+Retrieve one association edge.
+
+### `GET /associations`
+
+List associations with optional filters: `namespace`, `source_type`, `source_id`, `target_type`, `target_id`, `edge_type`.
+
 ## Interactive docs
 
 When running locally:
@@ -274,4 +318,15 @@ curl -X POST http://localhost:8000/semantic-memory/promote \
   -d '{"namespace":"demo","key":"user-theme","content":"User prefers dark mode","confidence":0.85,"evidence":[{"source_type":"episode","source_id":"<episode-id>"}]}'
 
 curl "http://localhost:8000/semantic-memory?namespace=demo&active_only=true"
+
+# Associations: link memories and fetch related context
+curl -X POST http://localhost:8000/associations \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","source_type":"memory_record","source_id":"<id-a>","target_type":"memory_record","target_id":"<id-b>","edge_type":"supports","weight":0.9,"explanation":"Both mention billing policy"}'
+
+curl -X POST http://localhost:8000/associations/auto-link \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","metadata_match":true,"content_similarity":true,"similarity_threshold":0.3}'
+
+curl "http://localhost:8000/associations/related?namespace=demo&source_type=memory_record&source_id=<id-a>&depth=2"
 ```
