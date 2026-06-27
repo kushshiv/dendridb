@@ -1,11 +1,14 @@
 import uuid
 from datetime import datetime
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import DateTime, Float, Index, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from dendridb.core.database import Base
+
+EMBEDDING_DIMENSIONS = 384
 
 
 class MemoryRecord(Base):
@@ -38,6 +41,10 @@ class MemoryRecord(Base):
     provenance: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
     salience: Mapped[float | None] = mapped_column(Float, nullable=True)
+    embedding: Mapped[list[float] | None] = mapped_column(
+        Vector(EMBEDDING_DIMENSIONS),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

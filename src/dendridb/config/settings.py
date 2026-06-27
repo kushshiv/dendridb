@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     postgres_password: str = Field(default="dendridb", alias="POSTGRES_PASSWORD")
     postgres_db: str = Field(default="dendridb", alias="POSTGRES_DB")
 
+    embedding_dimensions: int = Field(default=384, alias="EMBEDDING_DIMENSIONS")
+    embedding_model: str = Field(default="local-hash", alias="EMBEDDING_MODEL")
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def database_url(self) -> str:

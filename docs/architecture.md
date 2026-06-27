@@ -30,7 +30,7 @@ DendriDB is organized as a modular Python application with clear separation betw
 
 ## Data store
 
-PostgreSQL is the primary data store. The Docker image includes **pgvector** for future embedding-based retrieval (Milestone 6).
+PostgreSQL is the primary data store. The Docker image includes **pgvector** for embedding-based hybrid recall (Milestone 6).
 
 ## Configuration
 

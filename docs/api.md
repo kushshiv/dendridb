@@ -272,6 +272,33 @@ Retrieve one association edge.
 
 List associations with optional filters: `namespace`, `source_type`, `source_id`, `target_type`, `target_id`, `edge_type`.
 
+### `POST /recall`
+
+Hybrid memory recall combining semantic similarity, recency, salience, and optional association context.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Namespace to search |
+| `query` | string | yes | Natural-language recall cue |
+| `limit` | integer | no | Max results, defaults to `10` |
+| `candidate_limit` | integer | no | Vector candidates to score, defaults to `100` |
+| `context_memory_id` | UUID | no | Boost memories linked to this record |
+| `min_score` | float | no | Minimum hybrid score, defaults to `0.0` |
+| `weights` | object | no | Ranking weights for similarity, recency, salience, association |
+
+Each result includes a hybrid `score` and an `explanation` with factor values, weighted contributions, and a summary.
+
+Memory records receive embeddings automatically on create.
+
+### `POST /recall/reindex`
+
+Backfill embeddings for memories in a namespace.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Namespace to reindex |
+| `limit` | integer | no | Max records, defaults to `500` |
+
 ## Interactive docs
 
 When running locally:
@@ -329,4 +356,9 @@ curl -X POST http://localhost:8000/associations/auto-link \
   -d '{"namespace":"demo","metadata_match":true,"content_similarity":true,"similarity_threshold":0.3}'
 
 curl "http://localhost:8000/associations/related?namespace=demo&source_type=memory_record&source_id=<id-a>&depth=2"
+
+# Hybrid recall with explainable ranking
+curl -X POST http://localhost:8000/recall \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","query":"billing invoice question","limit":5,"weights":{"similarity":0.5,"recency":0.2,"salience":0.2,"association":0.1}}'
 ```
