@@ -23,7 +23,7 @@ async def integration_client():
 
     session_factory = get_session_factory()
     async with session_factory() as session:
-        await session.execute(text("TRUNCATE TABLE memory_records"))
+        await session.execute(text("TRUNCATE TABLE working_memory_items, memory_records"))
         await session.commit()
 
     app = create_app()

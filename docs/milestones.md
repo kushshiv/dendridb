@@ -30,10 +30,17 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - Filters by namespace, actor, type, and source
 - Unit and integration tests
 
-## Milestone 2 — Working memory
+## Milestone 2 — Working memory ✅
 
-- Session-scoped short-term memory
-- TTL/expiry behavior
+**Goal:** Active short-term memory separate from durable records.
+
+**Delivered:**
+
+- `WorkingMemoryItem` model and migration
+- Session/task-scoped retrieval
+- TTL with automatic expiry filtering
+- Create, replace (upsert), update, get, and list endpoints
+- Unit and integration tests for expiry and session isolation
 
 ## Milestone 3 — Episodic memory
 

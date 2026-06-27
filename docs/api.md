@@ -97,6 +97,50 @@ List memory records with optional filters and pagination.
 }
 ```
 
+## Working memory
+
+Short-term, session-scoped memory with TTL and replace support.
+
+### `POST /working-memory`
+
+Create a working memory item. Returns `409 Conflict` if the same `namespace` + `session_id` + `key` already exists — use `PUT /working-memory/replace` instead.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Tenant or namespace |
+| `session_id` | string | yes | Session scope |
+| `key` | string | yes | Item key within the session |
+| `content` | string | yes | Memory content |
+| `task_id` | string | no | Optional task scope |
+| `actor_id` | string | no | Actor identifier |
+| `metadata` | object | no | Arbitrary JSON metadata |
+| `ttl_seconds` | int | no | Time-to-live in seconds |
+
+### `PUT /working-memory/replace`
+
+Create or update (upsert) working memory for a `namespace` + `session_id` + `key`. Refreshes TTL on update.
+
+### `GET /working-memory/{item_id}`
+
+Retrieve a working memory item. Expired items return `404` unless `include_expired=true`.
+
+### `PATCH /working-memory/{item_id}`
+
+Update content, metadata, task, actor, or TTL for an active (non-expired) item.
+
+### `GET /working-memory`
+
+List working memory with session/task filters. Expired items are excluded by default.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `namespace` | string | Filter by namespace |
+| `session_id` | string | Filter by session |
+| `task_id` | string | Filter by task |
+| `include_expired` | bool | Include expired items (default false) |
+| `limit` | int | Page size (1–200, default 50) |
+| `offset` | int | Offset (default 0) |
+
 ## Interactive docs
 
 When running locally:
@@ -117,4 +161,12 @@ curl "http://localhost:8000/memories?namespace=demo"
 
 # Get by ID
 curl http://localhost:8000/memories/<record-id>
+
+# Working memory: upsert session context
+curl -X PUT http://localhost:8000/working-memory/replace \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","session_id":"sess-1","key":"context","content":"Current task","ttl_seconds":3600}'
+
+# List active working memory for a session
+curl "http://localhost:8000/working-memory?namespace=demo&session_id=sess-1"
 ```
