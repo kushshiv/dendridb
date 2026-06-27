@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import FastAPI
 
 from dendridb import __version__
-from dendridb.api.routes import health, memories, working_memory
+from dendridb.api.routes import episodes, health, memories, working_memory
 from dendridb.config import get_settings
 from dendridb.core.database import get_engine
 
@@ -27,6 +27,7 @@ def create_app() -> FastAPI:
     application.include_router(health.router, tags=["health"])
     application.include_router(memories.router)
     application.include_router(working_memory.router)
+    application.include_router(episodes.router)
     return application
 
 

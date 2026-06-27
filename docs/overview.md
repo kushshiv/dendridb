@@ -6,11 +6,11 @@ See also the root [dendridb_overview.md](../dendridb_overview.md) for the full p
 
 ## Current status
 
-**Milestone 2 (Working memory)** is complete. The project provides:
+**Milestone 3 (Episodic memory)** is complete. The project provides:
 
-- FastAPI HTTP API with health, memory record, and working memory endpoints
+- FastAPI HTTP API with health, memory, working memory, and episodic endpoints
 - PostgreSQL via Docker Compose (with pgvector image for future milestones)
-- `MemoryRecord` durable storage and `WorkingMemoryItem` session-scoped TTL storage
+- Durable records, session-scoped working memory, and ordered episodic events
 - Configuration via environment variables
 - Alembic migrations
 - Pytest test suite
@@ -24,7 +24,7 @@ Future milestones will add:
 
 1. ~~Basic memory records~~ ✅
 2. ~~Working memory~~ ✅
-3. Episodic memory
+3. ~~Episodic memory~~ ✅
 4. Semantic memory
 5. Association graph
 6. Hybrid retrieval

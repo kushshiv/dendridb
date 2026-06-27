@@ -42,10 +42,17 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - Create, replace (upsert), update, get, and list endpoints
 - Unit and integration tests for expiry and session isolation
 
-## Milestone 3 — Episodic memory
+## Milestone 3 — Episodic memory ✅
 
-- Episodes and episodic events
-- Replay utilities
+**Goal:** Store ordered event sequences as episodes.
+
+**Delivered:**
+
+- `Episode` and `EpisodicEvent` models and migration
+- `POST /episodes`, append events, list, get, and replay endpoints
+- Session/task grouping and event provenance
+- Ordered replay API
+- Unit and integration tests
 
 ## Milestone 4 — Semantic memory
 
