@@ -141,6 +141,48 @@ List working memory with session/task filters. Expired items are excluded by def
 | `limit` | int | Page size (1–200, default 50) |
 | `offset` | int | Offset (default 0) |
 
+## Episodic memory
+
+Store ordered sequences of events grouped into episodes.
+
+### `POST /episodes`
+
+Create an episode with session/task context.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Tenant or namespace |
+| `session_id` | string | yes | Session grouping |
+| `task_id` | string | no | Task context |
+| `actor_id` | string | no | Actor identifier |
+| `title` | string | no | Episode title |
+| `summary` | string | no | Episode summary |
+| `metadata` | object | no | Arbitrary JSON metadata |
+
+### `POST /episodes/{episode_id}/events`
+
+Append an event to an episode. Events receive sequential `sequence_number` values starting at `0`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `content` | string | yes | Event content |
+| `event_type` | string | no | Defaults to `event` |
+| `metadata` | object | no | Arbitrary JSON metadata |
+| `source` | string | no | Event source |
+| `provenance` | object | no | Traceability details |
+
+### `GET /episodes/{episode_id}/replay`
+
+Return the episode and all events in sequence order (for replay/consolidation).
+
+### `GET /episodes/{episode_id}`
+
+Retrieve episode metadata including `event_count`.
+
+### `GET /episodes`
+
+List episodes with optional filters: `namespace`, `session_id`, `task_id`, `actor_id`.
+
 ## Interactive docs
 
 When running locally:
@@ -169,4 +211,15 @@ curl -X PUT http://localhost:8000/working-memory/replace \
 
 # List active working memory for a session
 curl "http://localhost:8000/working-memory?namespace=demo&session_id=sess-1"
+
+# Episodic memory: create episode and append events
+curl -X POST http://localhost:8000/episodes \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","session_id":"sess-1","title":"Support chat"}'
+
+curl -X POST http://localhost:8000/episodes/<episode-id>/events \
+  -H "Content-Type: application/json" \
+  -d '{"content":"User asked about billing","source":"chat","provenance":{"turn":1}}'
+
+curl http://localhost:8000/episodes/<episode-id>/replay
 ```
