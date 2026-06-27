@@ -54,9 +54,18 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - Ordered replay API
 - Unit and integration tests
 
-## Milestone 4 — Semantic memory
+## Milestone 4 — Semantic memory ✅
 
-- Durable facts with confidence and evidence links
+**Goal:** Store durable facts with confidence, evidence, and versioning.
+
+**Delivered:**
+
+- `SemanticMemory` and `SemanticEvidence` models and migration
+- Direct create (`POST /semantic-memory`) and promotion flow (`POST /semantic-memory/promote`)
+- Evidence links to memory records, episodes, or episodic events
+- Confidence score and version/supersession on contradiction
+- List, get, and evidence endpoints with active-only filtering
+- Unit tests for promotion rules and integration tests
 
 ## Milestone 5 — Association layer
 
