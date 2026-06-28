@@ -4,8 +4,6 @@ A brain-inspired memory database for AI systems.
 
 DendriDB is not a plain vector store or chat history tool. It is a memory architecture inspired by the brain at a systems level: encoding, working memory, episodic memory, semantic memory, association, consolidation, cue-based recall, and forgetting.
 
-This repository is built incrementally in milestones. **Milestone 1** adds the first memory layer: create, read, and list generic memory records.
-
 ## Quick start
 
 ### Prerequisites
@@ -141,11 +139,11 @@ scripts/          Utility scripts
 
 - [Overview](docs/overview.md)
 - [Architecture](docs/architecture.md)
-- [Milestones](docs/milestones.md)
 - [Development guide](docs/development.md)
 - [Testing guide](docs/testing.md)
 - [API guide](docs/api.md)
 - [Deployment guide](docs/deployment.md)
+- [Hardening guide](docs/hardening.md)
 - [Benchmarking guide](docs/benchmarking.md)
 
 ## License

@@ -74,7 +74,7 @@ decay: setup migrate
 	$(PY) -m dendridb.cli.main decay run --namespace $${NAMESPACE:-demo}
 
 seed:
-	@echo "Seed data will be added in later milestones."
+	@echo "Seed data command not yet implemented."
 
 benchmark: setup migrate
 	$(PY) -m dendridb.cli.main benchmark run --smoke

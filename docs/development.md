@@ -52,6 +52,9 @@ Or use `make migrate` to apply pending migrations.
 
 ```bash
 dendridb version
+dendridb consolidate run --namespace demo
+dendridb decay run --namespace demo
+dendridb benchmark run --smoke
 ```
 
 ## Project conventions
@@ -60,7 +63,7 @@ dendridb version
 - Add models under `dendridb.models`
 - Add routes under `dendridb.api.routes`
 - Add business logic under `dendridb.services`
-- Keep milestone scope focused
+- Keep changes focused and covered by tests
 
 ## Environment variables
 

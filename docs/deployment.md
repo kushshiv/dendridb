@@ -35,4 +35,4 @@ Production deployments should set all database variables explicitly. Do not rely
 
 ## Scaling
 
-Milestone 0 is a single-process API. Future milestones will add worker processes for consolidation. Horizontal scaling of the API will require shared PostgreSQL and careful session handling.
+The API runs as a single process by default. Consolidation and decay jobs can be triggered via the API or CLI (`dendridb consolidate run`, `dendridb decay run`). Horizontal scaling of the API requires shared PostgreSQL and careful session handling. For heavier workloads, run job commands on a schedule or as separate worker processes pointing at the same database.

@@ -11,10 +11,6 @@ What problem does this solve?
 
 ## Proposed solution
 
-## Milestone
-
-Which milestone does this belong to?
-
 ## Alternatives considered
 
 ## Additional context

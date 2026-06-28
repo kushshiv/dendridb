@@ -1,6 +1,6 @@
 # DendriDB Overview
 
-DendriDB is a brain-inspired memory database for AI systems, built first in Python and designed to grow in milestones. Its purpose is not just to store records like a normal database, but to help an AI system remember experiences, connect related information, strengthen useful memories, forget low-value details, and recall what matters later in a way that resembles how memory works in the brain.
+DendriDB is a brain-inspired memory database for AI systems, implemented in Python. Its purpose is not just to store records like a normal database, but to help an AI system remember experiences, connect related information, strengthen useful memories, forget low-value details, and recall what matters later in a way that resembles how memory works in the brain.
 
 This project should be understood as a memory system, not just a storage system. A normal database is good at exact reads and writes. DendriDB aims to go further by adding memory traces, working memory, episodic memory, semantic memory, associations, replay-based consolidation, and forgetting.
 
@@ -73,7 +73,7 @@ It may use some of those pieces internally, but the project is about combining t
 
 ## Core memory layers
 
-DendriDB should grow in layers. Each layer should be understandable, testable, and independently useful.
+DendriDB is organized in layers. Each layer is understandable, testable, and useful on its own.
 
 ### 1. Input and encoding layer
 
@@ -203,21 +203,6 @@ A simple example flow:
 8. Old low-value traces decay or archive.
 9. The next time a similar task appears, recall returns not just similar text, but relevant connected experience.
 
-## Why milestones matter for this project
-
-DendriDB is too broad to build all at once. The project should be built in milestones, with each milestone producing a working, tested system.
-
-This approach matters because it:
-
-- reduces complexity
-- lowers project risk
-- makes debugging easier
-- helps contributors understand the system
-- keeps the codebase runnable at every stage
-- allows architecture changes before too much is built
-
-The right strategy is to start with a simple memory core and add layers one by one.
-
 ## Why Python first
 
 DendriDB should start in **Python** because the first challenge is not low-level performance. The first challenge is to discover the right architecture, memory model, ranking behavior, consolidation logic, and developer experience.
@@ -268,15 +253,14 @@ But these should come only after the Python-first system is running well and ben
 
 DendriDB should follow these principles:
 
-- Build in milestones.
-- Keep every milestone runnable and testable.
 - Favor clarity over cleverness.
 - Use brain inspiration without over-claiming biology.
 - Prioritize memory quality over feature count.
 - Make retrieval explainable.
 - Keep docs as important as code.
+- Keep the system runnable, tested, and documented at every stage.
 - Let performance optimization come after architectural learning.
 
 ## Summary in one paragraph
 
-DendriDB is a Python-first, brain-inspired memory database for AI systems that stores experiences, links related memories, consolidates useful knowledge, forgets stale details, and retrieves memory through context and association rather than only exact matching. It should be built milestone by milestone so each layer is understandable, testable, and useful before the next one is added.
+DendriDB is a Python-first, brain-inspired memory database for AI systems that stores experiences, links related memories, consolidates useful knowledge, forgets stale details, and retrieves memory through context and association rather than only exact matching.

@@ -16,23 +16,23 @@ Thank you for your interest in contributing to DendriDB.
 - Follow existing code style (Ruff handles formatting and linting).
 - Add or update tests for behavior changes.
 - Update docs when user-facing behavior changes.
-- Keep milestones focused — finish one milestone before starting the next.
+- Keep pull requests focused on one concern where possible.
 
 ## Pull request checklist
 
-- [ ] Tests pass locally
-- [ ] Lint and format checks pass
+- [ ] Tests pass locally (`make test`)
+- [ ] Lint and format checks pass (`make lint`)
 - [ ] Docs updated if needed
 - [ ] Migrations included if schema changed
 
 ## Reporting issues
 
-Use GitHub issues for bugs, feature requests, and milestone discussions. Include reproduction steps, expected behavior, and environment details.
+Use GitHub issues for bugs and feature requests. Include reproduction steps, expected behavior, and environment details.
 
 ## Semantic versioning
 
-DendriDB follows [Semantic Versioning](https://semver.org/). Milestone releases map to minor or patch bumps until the API stabilizes.
+DendriDB follows [Semantic Versioning](https://semver.org/).
 
 ## Changelog
 
-Significant changes should be noted in release notes or a project changelog as milestones complete.
+Significant changes should be noted in release notes or a project changelog.

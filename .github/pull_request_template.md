@@ -11,10 +11,6 @@
 - [ ] Tests
 - [ ] DevOps / CI
 
-## Milestone
-
-<!-- e.g. Milestone 0 — Foundation -->
-
 ## Checklist
 
 - [ ] `make lint` passes
