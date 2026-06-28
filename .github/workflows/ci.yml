@@ -17,7 +17,7 @@ jobs:
       - name: Set up project
         run: make setup
       - name: Format check
-        run: make lint
+        run: make lint-check
 
   test-unit:
     runs-on: ubuntu-latest
