@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dendridb.api.schemas.recall import RecallRequest
 from dendridb.config import get_settings
+from dendridb.memory.consolidation import is_merged_record
 from dendridb.memory.embeddings import embed_text
 from dendridb.models.association import MemoryAssociation
 from dendridb.models.memory_record import MemoryRecord
@@ -139,6 +140,8 @@ async def recall_memories(
     weights = payload.weights.to_ranking_weights()
     scored: list[ScoredMemory] = []
     for record, similarity in rows:
+        if is_merged_record(record.metadata_):
+            continue
         hybrid = compute_hybrid_score(
             similarity=float(similarity),
             recency=recency_score(record.created_at, now=now),

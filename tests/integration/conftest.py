@@ -8,8 +8,8 @@ from dendridb.api.main import create_app
 from dendridb.core.database import Base, get_engine, get_session_factory
 
 INTEGRATION_TABLES = (
-    "memory_associations, semantic_evidence, semantic_memories, episodic_events, episodes, "
-    "working_memory_items, memory_records"
+    "consolidation_job_runs, memory_associations, semantic_evidence, semantic_memories, "
+    "episodic_events, episodes, working_memory_items, memory_records"
 )
 
 

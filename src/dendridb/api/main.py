@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from dendridb import __version__
 from dendridb.api.routes import (
     associations,
+    consolidation,
     episodes,
     health,
     memories,
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
     application.include_router(semantic_memory.router)
     application.include_router(associations.router)
     application.include_router(recall.router)
+    application.include_router(consolidation.router)
     return application
 
 

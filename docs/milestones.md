@@ -92,9 +92,17 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - `POST /recall/reindex` for embedding backfill
 - Unit tests for ranking/embeddings and integration recall scenarios
 
-## Milestone 7 — Consolidation
+## Milestone 7 — Consolidation ✅
 
-- Background replay and promotion workers
+**Goal:** Sleep-inspired replay and memory refinement.
+
+**Delivered:**
+
+- `ConsolidationJobRun` model and migration
+- Replay recent episodes (read-only), merge duplicate memory records, promote repeated patterns to semantic memory
+- Summarization hook (`memory/summarize.py`) for pattern content
+- `POST /consolidation/jobs`, job status/list endpoints, CLI worker (`dendridb consolidate run`)
+- Merged records excluded from recall; unit and integration tests
 
 ## Milestone 8 — Forgetting and decay
 
