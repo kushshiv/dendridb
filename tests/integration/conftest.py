@@ -19,6 +19,7 @@ def run_migrations() -> None:
         cwd=PROJECT_ROOT,
     )
 
+
 INTEGRATION_TABLES = (
     "decay_job_runs, consolidation_job_runs, memory_associations, semantic_evidence, "
     "semantic_memories, episodic_events, episodes, working_memory_items, memory_records"
