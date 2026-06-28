@@ -111,6 +111,8 @@ Alternatively, skip `make dev` and use the Docker API: `make docker-up-all` (API
 | `make test` | Run unit and integration tests |
 | `make test-unit` | Run unit tests only |
 | `make test-integration` | Run integration tests (requires PostgreSQL) |
+| `make test-e2e` | Run full-memory-flow e2e test (requires PostgreSQL) |
+| `make test-e2e-live` | Run e2e against a live API (`make docker-up-all`) |
 | `make docker-up` | Start PostgreSQL only (for local `make dev`) |
 | `make docker-up-all` | Start PostgreSQL + API in Docker |
 | `make docker-down` | Stop Docker services |
