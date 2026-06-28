@@ -66,7 +66,7 @@ The full flow covers health probes, memory records, working memory, episodes, se
 
 ## CI
 
-GitHub Actions runs `make lint-check`, `make test-unit`, and (with a PostgreSQL service) `make test-integration` plus `make test-e2e`. A Docker build check runs on every push and pull request.
+GitHub Actions runs `make lint-check`, `make test-unit`, `make test-integration`, and `make test-e2e` as separate jobs (integration and e2e each use their own PostgreSQL service). A Docker build check runs on every push and pull request.
 
 ## Writing tests
 

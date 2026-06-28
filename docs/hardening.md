@@ -42,7 +42,8 @@ GitHub Actions runs:
 
 - `make lint-check` — formatting and lint rules
 - `make test-unit` — fast isolated tests
-- `make migrate` + `make test-integration` — database and API tests, including benchmark smoke
+- `make migrate` + `make test-integration` — database and API integration tests
+- `make migrate` + `make test-e2e` — full-memory-flow end-to-end test
 
 Keep benchmark datasets deterministic. Avoid timing-based assertions in CI; prefer quality hit-rate and job completion checks.
 
