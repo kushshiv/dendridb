@@ -1,4 +1,4 @@
-.PHONY: setup dev fmt lint test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark clean migrate
+.PHONY: setup dev fmt lint test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark consolidate clean migrate
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -60,6 +60,9 @@ docker-down:
 
 migrate: setup
 	$(ALEMBIC) upgrade head
+
+consolidate: setup migrate
+	$(PY) -m dendridb.cli.main consolidate run --namespace $${NAMESPACE:-demo}
 
 seed:
 	@echo "Seed data will be added in later milestones."

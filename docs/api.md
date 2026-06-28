@@ -299,6 +299,28 @@ Backfill embeddings for memories in a namespace.
 | `namespace` | string | yes | Namespace to reindex |
 | `limit` | integer | no | Max records, defaults to `500` |
 
+### `POST /consolidation/jobs`
+
+Run a consolidation job: replay recent episodes, merge duplicate memories, and promote repeated patterns into semantic memory.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Namespace to consolidate |
+| `lookback_hours` | integer | no | Episode replay window, defaults to `168` |
+| `duplicate_similarity_threshold` | float | no | Defaults to `0.85` |
+| `min_pattern_occurrences` | integer | no | Minimum repeated events to promote, defaults to `2` |
+| `dry_run` | boolean | no | Simulate without writes, defaults to `false` |
+
+Episodes are replayed read-only. Duplicate memory records are marked `consolidation_status: merged` and excluded from recall.
+
+### `GET /consolidation/jobs/{job_id}`
+
+Retrieve consolidation job status and stats.
+
+### `GET /consolidation/jobs`
+
+List consolidation jobs with optional `namespace` filter.
+
 ## Interactive docs
 
 When running locally:
@@ -361,4 +383,12 @@ curl "http://localhost:8000/associations/related?namespace=demo&source_type=memo
 curl -X POST http://localhost:8000/recall \
   -H "Content-Type: application/json" \
   -d '{"namespace":"demo","query":"billing invoice question","limit":5,"weights":{"similarity":0.5,"recency":0.2,"salience":0.2,"association":0.1}}'
+
+# Consolidation: replay episodes and promote repeated patterns
+curl -X POST http://localhost:8000/consolidation/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","lookback_hours":168,"min_pattern_occurrences":2}'
+
+# Or via CLI
+dendridb consolidate run --namespace demo
 ```
