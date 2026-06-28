@@ -32,8 +32,9 @@ make docker-up-all
 ## Code quality
 
 ```bash
-make fmt    # Auto-format with Ruff
-make lint   # Check format and lint rules
+make lint     # Auto-fix formatting and lint issues
+make lint-check  # Verify only (used in CI)
+make benchmark   # Smoke benchmark against PostgreSQL
 ```
 
 ## Database migrations

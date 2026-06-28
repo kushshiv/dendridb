@@ -1,0 +1,87 @@
+{
+  "name": "standard",
+  "description": "Default local benchmark dataset for ingestion, recall, and consolidation.",
+  "memories": [
+    {
+      "content": "User prefers dark mode for the application interface",
+      "salience": 0.9,
+      "metadata": {"topic": "preferences"}
+    },
+    {
+      "content": "Billing invoices are sent on the first of each month",
+      "salience": 0.85,
+      "metadata": {"topic": "billing"}
+    },
+    {
+      "content": "Support team escalation path goes through tier-two engineers",
+      "salience": 0.75,
+      "metadata": {"topic": "support"}
+    },
+    {
+      "content": "Deployment window for production is Tuesday evenings UTC",
+      "salience": 0.7,
+      "metadata": {"topic": "operations"}
+    },
+    {
+      "content": "New customers receive onboarding email within one hour",
+      "salience": 0.65,
+      "metadata": {"topic": "onboarding"}
+    },
+    {
+      "content": "API rate limit defaults to one thousand requests per minute",
+      "salience": 0.6,
+      "metadata": {"topic": "api"}
+    },
+    {
+      "content": "Password reset links expire after thirty minutes",
+      "salience": 0.55,
+      "metadata": {"topic": "security"}
+    },
+    {
+      "content": "Quarterly roadmap review includes memory and retrieval milestones",
+      "salience": 0.5,
+      "metadata": {"topic": "planning"}
+    }
+  ],
+  "recall_queries": [
+    {
+      "query": "dark mode preference",
+      "expected_in_top_k": ["dark mode"],
+      "limit": 5
+    },
+    {
+      "query": "invoice timing",
+      "expected_in_top_k": ["invoice"],
+      "limit": 5
+    },
+    {
+      "query": "support escalation process",
+      "expected_in_top_k": ["escalation"],
+      "limit": 5
+    },
+    {
+      "query": "production deployment schedule",
+      "expected_in_top_k": ["deployment"],
+      "limit": 5
+    }
+  ],
+  "consolidation": {
+    "min_pattern_occurrences": 2,
+    "episodes": [
+      {
+        "session_id": "bench-standard-1",
+        "events": [
+          "Customer asked about annual billing discounts",
+          "Customer asked about annual billing discounts"
+        ]
+      },
+      {
+        "session_id": "bench-standard-2",
+        "events": [
+          "User requested export of conversation history",
+          "User requested export of conversation history"
+        ]
+      }
+    ]
+  }
+}

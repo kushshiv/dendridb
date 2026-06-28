@@ -1,0 +1,42 @@
+{
+  "name": "smoke",
+  "description": "Minimal deterministic dataset for CI smoke benchmarks.",
+  "memories": [
+    {
+      "content": "User prefers dark mode for the application interface",
+      "salience": 0.9
+    },
+    {
+      "content": "Billing invoices are sent on the first of each month",
+      "salience": 0.8
+    },
+    {
+      "content": "Support team escalation path goes through tier-two engineers",
+      "salience": 0.7
+    }
+  ],
+  "recall_queries": [
+    {
+      "query": "dark mode preference",
+      "expected_in_top_k": ["dark mode"],
+      "limit": 3
+    },
+    {
+      "query": "when are invoices sent",
+      "expected_in_top_k": ["invoice"],
+      "limit": 3
+    }
+  ],
+  "consolidation": {
+    "min_pattern_occurrences": 2,
+    "episodes": [
+      {
+        "session_id": "bench-smoke-1",
+        "events": [
+          "Customer asked about annual billing discounts",
+          "Customer asked about annual billing discounts"
+        ]
+      }
+    ]
+  }
+}

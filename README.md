@@ -103,8 +103,11 @@ Alternatively, skip `make dev` and use the Docker API: `make docker-up-all` (API
 |---------|-------------|
 | `make setup` | Create virtualenv and install dependencies |
 | `make dev` | Run API with hot reload |
-| `make fmt` | Format code with Ruff |
-| `make lint` | Run lint and format checks |
+| `make fmt` | Auto-fix formatting and lint issues (alias for `make lint`) |
+| `make lint` | Auto-fix formatting and lint issues |
+| `make lint-check` | Verify formatting and lint (CI) |
+| `make benchmark` | Run smoke benchmark suite (requires PostgreSQL) |
+| `make benchmark-full` | Run full benchmark suite and write reports |
 | `make test` | Run unit and integration tests |
 | `make test-unit` | Run unit tests only |
 | `make test-integration` | Run integration tests (requires PostgreSQL) |
@@ -128,7 +131,7 @@ src/dendridb/     Application package
 alembic/          Database migrations
 tests/            Unit, integration, and e2e tests
 docs/             Documentation
-benchmarks/       Benchmark scripts (later milestones)
+benchmarks/       Benchmark datasets, scripts, and reports
 scripts/          Utility scripts
 ```
 
