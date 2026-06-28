@@ -39,6 +39,9 @@ class MemoryRecordResponse(BaseModel):
     provenance: dict[str, Any] | None
     confidence: float | None
     salience: float | None
+    pinned: bool = False
+    archived_at: datetime | None = None
+    last_retrieved_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 

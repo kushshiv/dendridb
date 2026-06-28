@@ -1,15 +1,28 @@
 import os
+import subprocess
+import sys
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 
 from dendridb.api.main import create_app
-from dendridb.core.database import Base, get_engine, get_session_factory
+from dendridb.core.database import get_session_factory
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+
+def run_migrations() -> None:
+    subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        check=True,
+        cwd=PROJECT_ROOT,
+    )
+
 
 INTEGRATION_TABLES = (
-    "consolidation_job_runs, memory_associations, semantic_evidence, semantic_memories, "
-    "episodic_events, episodes, working_memory_items, memory_records"
+    "decay_job_runs, consolidation_job_runs, memory_associations, semantic_evidence, "
+    "semantic_memories, episodic_events, episodes, working_memory_items, memory_records"
 )
 
 
@@ -22,10 +35,7 @@ async def integration_client():
     if not integration_enabled():
         pytest.skip("Set RUN_INTEGRATION_TESTS=1 with PostgreSQL running to enable")
 
-    engine = get_engine()
-    async with engine.begin() as connection:
-        await connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        await connection.run_sync(Base.metadata.create_all)
+    run_migrations()
 
     session_factory = get_session_factory()
     async with session_factory() as session:

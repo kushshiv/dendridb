@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dendridb.api.schemas.recall import RecallRequest
 from dendridb.config import get_settings
-from dendridb.memory.consolidation import is_merged_record
 from dendridb.memory.embeddings import embed_text
+from dendridb.memory.visibility import is_active_memory
 from dendridb.models.association import MemoryAssociation
 from dendridb.models.memory_record import MemoryRecord
 from dendridb.ranking.hybrid import (
@@ -17,6 +17,7 @@ from dendridb.ranking.hybrid import (
     recency_score,
     salience_score,
 )
+from dendridb.services.decay import reinforce_memories
 
 
 @dataclass(frozen=True)
@@ -119,6 +120,7 @@ async def recall_memories(
         .where(
             MemoryRecord.namespace == payload.namespace,
             MemoryRecord.embedding.isnot(None),
+            MemoryRecord.archived_at.is_(None),
         )
         .order_by(MemoryRecord.embedding.cosine_distance(query_embedding))
         .limit(payload.candidate_limit)
@@ -140,7 +142,7 @@ async def recall_memories(
     weights = payload.weights.to_ranking_weights()
     scored: list[ScoredMemory] = []
     for record, similarity in rows:
-        if is_merged_record(record.metadata_):
+        if not is_active_memory(metadata=record.metadata_, archived_at=record.archived_at):
             continue
         hybrid = compute_hybrid_score(
             similarity=float(similarity),
@@ -164,4 +166,7 @@ async def recall_memories(
         )
 
     scored.sort(key=lambda item: (-item.hybrid_score, -item.similarity))
-    return scored[: payload.limit], total_candidates
+    final = scored[: payload.limit]
+    if final:
+        await reinforce_memories(session, [item.record for item in final])
+    return final, total_candidates

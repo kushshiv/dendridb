@@ -6,9 +6,9 @@ See also the root [dendridb_overview.md](../dendridb_overview.md) for the full p
 
 ## Current status
 
-**Milestone 7 (Consolidation)** is complete. The project provides:
+**Milestone 8 (Forgetting and decay)** is complete. The project provides:
 
-- FastAPI HTTP API with health, memory, working memory, episodic, semantic, association, recall, and consolidation endpoints
+- FastAPI HTTP API with health, memory, working memory, episodic, semantic, association, recall, consolidation, and decay endpoints
 - PostgreSQL via Docker Compose (with pgvector image for future milestones)
 - Durable records with pgvector embeddings, session-scoped working memory, episodic events, semantic facts, and memory associations
 - Configuration via environment variables
@@ -29,7 +29,7 @@ Future milestones will add:
 5. ~~Association graph~~ ✅
 6. ~~Hybrid retrieval~~ ✅
 7. ~~Consolidation workers~~ ✅
-8. Forgetting and decay
+8. ~~Forgetting and decay~~ ✅
 9. Benchmarking and hardening
 
 ## Who this is for

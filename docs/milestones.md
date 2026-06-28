@@ -104,9 +104,18 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - `POST /consolidation/jobs`, job status/list endpoints, CLI worker (`dendridb consolidate run`)
 - Merged records excluded from recall; unit and integration tests
 
-## Milestone 8 — Forgetting and decay
+## Milestone 8 — Forgetting and decay ✅
 
-- Decay policies and archival
+**Goal:** Time-based salience decay, retrieval strengthening, pinning, and archival.
+
+**Delivered:**
+
+- `pinned`, `archived_at`, and `last_retrieved_at` columns on memory records; `DecayJobRun` model and migration
+- Decay policies (`memory/decay_policy.py`) and visibility helpers (`memory/visibility.py`)
+- `POST /decay/jobs`, job status/list endpoints, CLI worker (`dendridb decay run`)
+- Memory lifecycle routes: pin, unpin, archive, restore
+- Recall excludes archived records and strengthens retrieved memories
+- Unit and integration tests
 
 ## Milestone 9 — Benchmarking and hardening
 

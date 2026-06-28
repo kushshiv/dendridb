@@ -1,4 +1,4 @@
-.PHONY: setup dev fmt lint test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark consolidate clean migrate
+.PHONY: setup dev fmt lint lint-check test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark consolidate decay clean migrate
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -30,11 +30,13 @@ dev: setup
 		|| echo "WARNING: PostgreSQL is not reachable on $$(grep POSTGRES_PORT .env 2>/dev/null | cut -d= -f2 || echo 5432). Run 'make docker-up' then 'make migrate' before using /memories."
 	$(UVICORN) dendridb.api.main:app --reload --host $${API_HOST:-0.0.0.0} --port $${API_PORT:-8000}
 
-fmt:
+fmt: lint
+
+lint:
 	$(RUFF) format src tests alembic
 	$(RUFF) check --fix src tests alembic
 
-lint:
+lint-check:
 	$(RUFF) format --check src tests alembic
 	$(RUFF) check src tests alembic
 
@@ -63,6 +65,9 @@ migrate: setup
 
 consolidate: setup migrate
 	$(PY) -m dendridb.cli.main consolidate run --namespace $${NAMESPACE:-demo}
+
+decay: setup migrate
+	$(PY) -m dendridb.cli.main decay run --namespace $${NAMESPACE:-demo}
 
 seed:
 	@echo "Seed data will be added in later milestones."
