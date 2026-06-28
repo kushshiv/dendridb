@@ -34,7 +34,7 @@ Integration tests require PostgreSQL. `make test-integration` sets `RUN_INTEGRAT
 
 ## End-to-end tests
 
-End-to-end tests exercise the full memory lifecycle across all milestones in one HTTP flow.
+End-to-end tests exercise the full memory lifecycle in one HTTP flow.
 
 **Default (ASGI + PostgreSQL)** — no separate API process required:
 

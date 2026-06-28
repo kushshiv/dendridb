@@ -1,4 +1,4 @@
-"""Shared end-to-end memory flow exercised across all milestones."""
+"""Shared end-to-end memory flow across all memory layers."""
 
 from __future__ import annotations
 

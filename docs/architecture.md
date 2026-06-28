@@ -21,16 +21,17 @@ DendriDB is organized as a modular Python application with clear separation betw
 | `dendridb.api` | HTTP routes and application factory |
 | `dendridb.config` | Settings and environment configuration |
 | `dendridb.core` | Database engine and session management |
-| `dendridb.models` | SQLAlchemy models (`MemoryRecord`, etc.) |
-| `dendridb.services` | Business logic (memory record CRUD) |
-| `dendridb.memory` | Memory layer abstractions |
+| `dendridb.models` | SQLAlchemy models |
+| `dendridb.services` | Business logic (CRUD, recall, jobs) |
+| `dendridb.memory` | Memory layer helpers (embeddings, decay, consolidation) |
 | `dendridb.ranking` | Hybrid retrieval ranking |
-| `dendridb.workers` | Background consolidation jobs |
-| `dendridb.cli` | Command-line tools |
+| `dendridb.benchmark` | Benchmark scenarios and reporting |
+| `dendridb.workers` | Background job helpers |
+| `dendridb.cli` | Command-line tools (`consolidate`, `decay`, `benchmark`) |
 
 ## Data store
 
-PostgreSQL is the primary data store. The Docker image includes **pgvector** for embedding-based hybrid recall (Milestone 6).
+PostgreSQL is the primary data store. The Docker image includes **pgvector** for embedding-based hybrid recall.
 
 ## Configuration
 
@@ -43,7 +44,7 @@ Schema changes are managed with Alembic. Migration scripts live in `alembic/vers
 ## Design principles
 
 - Python-first implementation
-- Milestone-driven delivery
-- Testable modules
-- Explainable memory recall (in later milestones)
+- Testable modules with unit, integration, and e2e coverage
+- Explainable hybrid recall with factor breakdowns
 - Docker-based local development
+- CLI and API parity for background jobs (consolidation, decay)
