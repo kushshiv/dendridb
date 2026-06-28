@@ -20,6 +20,7 @@ from dendridb.services.working_memory import (
     replace_working_memory_item,
     update_working_memory_item,
 )
+from dendridb.working_memory.record import WorkingMemoryConflictError
 
 router = APIRouter(prefix="/working-memory", tags=["working-memory"])
 
@@ -31,7 +32,7 @@ async def create_working_memory(
 ) -> WorkingMemoryResponse:
     try:
         item = await create_working_memory_item(session, payload)
-    except IntegrityError as exc:
+    except (IntegrityError, WorkingMemoryConflictError) as exc:
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

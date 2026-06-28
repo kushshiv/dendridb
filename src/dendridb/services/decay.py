@@ -17,6 +17,7 @@ from dendridb.memory.decay_policy import (
 from dendridb.memory.visibility import is_archived_record
 from dendridb.models.decay_job import DecayJobRun, DecayJobStatus
 from dendridb.models.memory_record import MemoryRecord
+from dendridb.services.job_dispatch import celery_runs_inline, dispatch_decay, uses_celery_queue
 
 
 def policy_from_settings(overrides: DecayRunRequest | None = None) -> DecayPolicy:
@@ -156,6 +157,14 @@ async def start_decay(
         trigger=trigger,
         dry_run=payload.dry_run,
     )
+    if uses_celery_queue():
+        job_id = job.id
+        await dispatch_decay(session, job_id, payload.model_dump())
+        if celery_runs_inline():
+            session.expire_all()
+            refreshed = await get_decay_job(session, job_id)
+            return refreshed or job
+        return job
     policy = policy_from_settings(payload)
     return await run_decay_job(session, job, policy)
 

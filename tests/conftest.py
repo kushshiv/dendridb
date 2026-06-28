@@ -1,3 +1,9 @@
+import os
+
+os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "1")
+os.environ.setdefault("WORKING_MEMORY_BACKEND", "redis")
+os.environ.setdefault("JOB_QUEUE_BACKEND", "sync")
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
@@ -16,6 +22,12 @@ def test_settings() -> Settings:
         postgres_user="dendridb",
         postgres_password="dendridb",
         postgres_db="dendridb",
+        celery_task_always_eager=True,
+        working_memory_backend="redis",
+        job_queue_backend="sync",
+        neo4j_uri="bolt://localhost:7687",
+        neo4j_user="neo4j",
+        neo4j_password="dendridb",
     )
 
 
@@ -31,6 +43,7 @@ def clear_settings_cache():
 @pytest.fixture
 def app(test_settings: Settings, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("ENVIRONMENT", "test")
+    monkeypatch.setenv("CELERY_TASK_ALWAYS_EAGER", "1")
     get_settings.cache_clear()
     return create_app()
 
