@@ -40,13 +40,13 @@ lint-check:
 	$(RUFF) format --check src tests alembic
 	$(RUFF) check src tests alembic
 
-test: test-unit test-integration
+test: test-unit test-integration test-e2e
 
 test-unit:
 	$(PYTEST) tests/unit -m "not integration and not e2e" -v
 
-test-integration:
-	$(PYTEST) tests/integration -m integration -v
+test-integration: setup migrate
+	RUN_INTEGRATION_TESTS=1 $(PYTEST) tests/integration -m integration -v
 
 test-e2e: setup migrate
 	RUN_E2E_TESTS=1 $(PYTEST) tests/e2e -m e2e -v

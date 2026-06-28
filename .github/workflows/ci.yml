@@ -65,6 +65,8 @@ jobs:
         run: make migrate
       - name: Run integration tests
         run: make test-integration
+      - name: Run e2e tests
+        run: make test-e2e
 
   docker-build:
     runs-on: ubuntu-latest

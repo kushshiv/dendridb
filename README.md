@@ -108,7 +108,7 @@ Alternatively, skip `make dev` and use the Docker API: `make docker-up-all` (API
 | `make lint-check` | Verify formatting and lint (CI) |
 | `make benchmark` | Run smoke benchmark suite (requires PostgreSQL) |
 | `make benchmark-full` | Run full benchmark suite and write reports |
-| `make test` | Run unit and integration tests |
+| `make test` | Run unit, integration, and e2e tests (requires PostgreSQL) |
 | `make test-unit` | Run unit tests only |
 | `make test-integration` | Run integration tests (requires PostgreSQL) |
 | `make test-e2e` | Run full-memory-flow e2e test (requires PostgreSQL) |
@@ -119,11 +119,11 @@ Alternatively, skip `make dev` and use the Docker API: `make docker-up-all` (API
 | `make migrate` | Apply Alembic migrations |
 | `make clean` | Remove build artifacts and virtualenv |
 
-Integration tests require PostgreSQL:
+Integration and e2e tests require PostgreSQL:
 
 ```bash
 make docker-up
-RUN_INTEGRATION_TESTS=1 make test-integration
+make test
 ```
 
 ## Project structure

@@ -13,20 +13,24 @@ tests/
 ## Running tests
 
 ```bash
-make test-unit
-make test-integration
-make test-e2e
-make test            # unit + integration
+make test              # unit + integration + e2e (requires PostgreSQL)
+make test-unit         # unit only
+make test-integration  # integration only (requires PostgreSQL)
+make test-e2e          # e2e only (requires PostgreSQL)
 ```
 
-## Integration tests
-
-Start PostgreSQL first:
+For the full suite locally, start PostgreSQL first:
 
 ```bash
 make docker-up
-RUN_INTEGRATION_TESTS=1 make test-integration
+make test
 ```
+
+Individual targets are optional when you only need one layer.
+
+## Integration tests
+
+Integration tests require PostgreSQL. `make test-integration` sets `RUN_INTEGRATION_TESTS=1` and runs migrations automatically.
 
 ## End-to-end tests
 
@@ -58,11 +62,11 @@ The full flow covers health probes, memory records, working memory, episodes, se
 |--------|-------|
 | `unit` | No external dependencies |
 | `integration` | Requires PostgreSQL |
-| `e2e` | Requires running API |
+| `e2e` | Requires PostgreSQL (ASGI mode) or live API (`E2E_LIVE=1`) |
 
 ## CI
 
-GitHub Actions mirrors local setup: each job runs `make setup`, then `make lint`, `make test-unit`, or `make migrate` + `make test-integration` (with a PostgreSQL service container). A Docker build check runs on every push and pull request.
+GitHub Actions runs `make lint-check`, `make test-unit`, and (with a PostgreSQL service) `make test-integration` plus `make test-e2e`. A Docker build check runs on every push and pull request.
 
 ## Writing tests
 
