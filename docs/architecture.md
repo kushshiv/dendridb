@@ -9,10 +9,26 @@ DendriDB is organized as a modular Python application with clear separation betw
 │   Client    │────▶│  FastAPI API │────▶│  Services   │
 └─────────────┘     └──────────────┘     └──────┬──────┘
                                                 │
-                     ┌──────────────┐     ┌─────▼──────┐
-                     │   Workers    │────▶│ PostgreSQL │
-                     └──────────────┘     └────────────┘
+         ┌──────────────┐     ┌─────────────────┼──────────────┐
+         │ Celery worker│────▶│ PostgreSQL      │              │
+         └──────┬───────┘     │ (durable memory)│              │
+                │             └─────────────────┘              │
+                │             ┌────────────┐     ┌───────────▼──┐
+                └────────────▶│   Redis    │     │    Neo4j     │
+                              │ (working   │     │ (graph /     │
+                              │  memory)   │     │ associations)│
+                              └────────────┘     └──────────────┘
 ```
+
+## Memory layers and stores
+
+| Layer | Store | Notes |
+|-------|-------|-------|
+| Working memory | **Redis** | Short-term, TTL-native session context |
+| Episodic / semantic / records | **PostgreSQL + pgvector** | Durable memory with hybrid recall |
+| Associations & graph traversal | **Neo4j** | Relationship graph; synced on every association write |
+| Association metadata | **PostgreSQL** | Source of truth for CRUD and listing |
+| Background jobs | **Celery + Redis** | Consolidation and decay |
 
 ## Package layout
 
@@ -20,31 +36,30 @@ DendriDB is organized as a modular Python application with clear separation betw
 |---------|---------|
 | `dendridb.api` | HTTP routes and application factory |
 | `dendridb.config` | Settings and environment configuration |
-| `dendridb.core` | Database engine and session management |
+| `dendridb.core` | Database and Redis clients |
+| `dendridb.graph` | Neo4j association sync and graph traversal |
+| `dendridb.working_memory` | Redis working memory store |
 | `dendridb.models` | SQLAlchemy models |
 | `dendridb.services` | Business logic (CRUD, recall, jobs) |
 | `dendridb.memory` | Memory layer helpers (embeddings, decay, consolidation) |
 | `dendridb.ranking` | Hybrid retrieval ranking |
 | `dendridb.benchmark` | Benchmark scenarios and reporting |
-| `dendridb.workers` | Background job helpers |
-| `dendridb.cli` | Command-line tools (`consolidate`, `decay`, `benchmark`) |
-
-## Data store
-
-PostgreSQL is the primary data store. The Docker image includes **pgvector** for embedding-based hybrid recall.
+| `dendridb.workers` | Celery app and background job executors |
+| `dendridb.cli` | Command-line tools |
 
 ## Configuration
 
-Settings are loaded from environment variables and optional `.env` file via Pydantic Settings. See `.env.example` for available options.
+Settings are loaded from environment variables and optional `.env` file via Pydantic Settings. See `.env.example`.
+
+Required services: **PostgreSQL**, **Redis**, **Neo4j**.
 
 ## Migrations
 
-Schema changes are managed with Alembic. Migration scripts live in `alembic/versions/`.
+Schema changes are managed with Alembic. Working memory (Redis) and the association graph (Neo4j) do not use Alembic.
 
 ## Design principles
 
-- Python-first implementation
-- Testable modules with unit, integration, and e2e coverage
+- Python-first, brain-inspired layered memory model
+- Production stack: Postgres + Redis + Neo4j + Celery
+- Testable with the same stack (all services required in CI)
 - Explainable hybrid recall with factor breakdowns
-- Docker-based local development
-- CLI and API parity for background jobs (consolidation, decay)

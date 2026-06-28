@@ -41,7 +41,9 @@ Example response:
   "version": "0.1.0",
   "environment": "development",
   "checks": {
-    "database": "ok"
+    "database": "ok",
+    "redis": "ok",
+    "neo4j": "ok"
   }
 }
 ```
@@ -64,7 +66,7 @@ See [docs/api.md](docs/api.md) for full API details.
 
 **`POST /memories` fails / `Connection refused` on port 5432**
 
-The API needs PostgreSQL running. `make dev` alone only starts the FastAPI server.
+The API needs PostgreSQL, Redis, and Neo4j running. `make dev` alone only starts the FastAPI server.
 
 1. Start Docker Desktop
 2. Run:
@@ -80,11 +82,11 @@ make migrate
 curl http://localhost:8000/health
 ```
 
-You should see `"checks": {"database": "ok"}`. Then retry your `curl` to `/memories`.
+You should see `"database": "ok"`, `"redis": "ok"`, and `"neo4j": "ok"` in checks. Then retry your request.
 
 **`make dev` fails with `Address already in use` on port 8000**
 
-`make docker-up` is for local development and starts **PostgreSQL only**. If the API container is already running on port 8000, stop it:
+`make docker-up` starts **PostgreSQL, Redis, and Neo4j** for local development. If the API container is already running on port 8000, stop it:
 
 ```bash
 docker compose stop api
@@ -106,18 +108,19 @@ Alternatively, skip `make dev` and use the Docker API: `make docker-up-all` (API
 | `make lint-check` | Verify formatting and lint (CI) |
 | `make benchmark` | Run smoke benchmark suite (requires PostgreSQL) |
 | `make benchmark-full` | Run full benchmark suite and write reports |
-| `make test` | Run unit, integration, and e2e tests (requires PostgreSQL) |
+| `make test` | Run unit, integration, and e2e tests (requires PostgreSQL + Redis + Neo4j) |
 | `make test-unit` | Run unit tests only |
-| `make test-integration` | Run integration tests (requires PostgreSQL) |
-| `make test-e2e` | Run full-memory-flow e2e test (requires PostgreSQL) |
+| `make test-integration` | Run integration tests (requires PostgreSQL + Redis + Neo4j) |
+| `make test-e2e` | Run full-memory-flow e2e test (requires PostgreSQL + Redis + Neo4j) |
 | `make test-e2e-live` | Run e2e against a live API (`make docker-up-all`) |
-| `make docker-up` | Start PostgreSQL only (for local `make dev`) |
-| `make docker-up-all` | Start PostgreSQL + API in Docker |
+| `make docker-up` | Start PostgreSQL, Redis, and Neo4j (for local `make dev`) |
+| `make docker-up-all` | Start full stack: Postgres, Redis, Neo4j, API, and worker |
+| `make worker` | Run Celery worker locally (async jobs) |
 | `make docker-down` | Stop Docker services |
 | `make migrate` | Apply Alembic migrations |
 | `make clean` | Remove build artifacts and virtualenv |
 
-Integration and e2e tests require PostgreSQL:
+Integration and e2e tests require PostgreSQL, Redis, and Neo4j:
 
 ```bash
 make docker-up

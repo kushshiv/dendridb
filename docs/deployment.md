@@ -4,35 +4,52 @@
 
 ```bash
 cp .env.example .env
-# Edit .env for production credentials
 make docker-up-all
 ```
 
 This starts:
 
-- **postgres** — PostgreSQL 16 with pgvector on port 5432
-- **api** — DendriDB FastAPI service on port 8000
+- **postgres** — PostgreSQL 16 with pgvector
+- **redis** — Redis 7 (working memory + Celery broker)
+- **neo4j** — Neo4j 5 (association graph and traversal)
+- **api** — FastAPI service on port 8000
+- **worker** — Celery worker for consolidation and decay
 
-For local development with hot reload, use `make docker-up` (Postgres only) and `make dev` instead.
+For local development with hot reload:
+
+```bash
+make docker-up    # postgres + redis + neo4j
+make migrate
+make dev
+```
 
 ## Health checks
 
-- API: `GET /health`
-- Docker Compose includes health checks for both services
+- Liveness: `GET /health/live`
+- Readiness: `GET /health/ready` (PostgreSQL + Redis + Neo4j)
+- All three data services are required for a healthy deployment
 
 ## Production considerations
 
-- Use strong `POSTGRES_PASSWORD` values
-- Set `ENVIRONMENT=production` and `DEBUG=false`
+- Use strong credentials for PostgreSQL and Neo4j
+- Set `ENVIRONMENT=production`, `DEBUG=false`, and `CELERY_TASK_ALWAYS_EAGER=false`
 - Run migrations before starting the API: `alembic upgrade head`
+- Run the Celery worker (`make worker` or Docker `worker` service)
 - Place the API behind a reverse proxy with TLS
-- Configure backups for PostgreSQL volumes
-- Monitor `/health` for database connectivity
+- Back up PostgreSQL and Neo4j volumes
+- Monitor `/health/ready`
 
 ## Environment variables
 
-Production deployments should set all database variables explicitly. Do not rely on defaults.
+See `.env.example`. Neo4j is required:
+
+| Variable | Purpose |
+|----------|---------|
+| `NEO4J_URI` | Bolt URI (e.g. `bolt://neo4j:7687` in Docker) |
+| `NEO4J_USER` / `NEO4J_PASSWORD` | Neo4j credentials |
 
 ## Scaling
 
-The API runs as a single process by default. Consolidation and decay jobs can be triggered via the API or CLI (`dendridb consolidate run`, `dendridb decay run`). Horizontal scaling of the API requires shared PostgreSQL and careful session handling. For heavier workloads, run job commands on a schedule or as separate worker processes pointing at the same database.
+- Scale API instances horizontally; share PostgreSQL, Redis, and Neo4j
+- Scale Celery workers for consolidation/decay throughput
+- Neo4j holds the live association graph; PostgreSQL holds association records for CRUD

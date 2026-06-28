@@ -17,6 +17,11 @@ from dendridb.models.consolidation_job import ConsolidationJobRun, Consolidation
 from dendridb.models.episode import Episode
 from dendridb.models.memory_record import MemoryRecord
 from dendridb.services.episode import replay_episode
+from dendridb.services.job_dispatch import (
+    celery_runs_inline,
+    dispatch_consolidation,
+    uses_celery_queue,
+)
 from dendridb.services.semantic_memory import promote_semantic_memory
 
 
@@ -236,4 +241,21 @@ async def start_consolidation(
         min_pattern_occurrences=payload.min_pattern_occurrences,
         dry_run=payload.dry_run,
     )
+    if uses_celery_queue():
+        job_id = job.id
+        await dispatch_consolidation(
+            session,
+            job_id,
+            {
+                "lookback_hours": options.lookback_hours,
+                "duplicate_similarity_threshold": options.duplicate_similarity_threshold,
+                "min_pattern_occurrences": options.min_pattern_occurrences,
+                "dry_run": options.dry_run,
+            },
+        )
+        if celery_runs_inline():
+            session.expire_all()
+            refreshed = await get_consolidation_job(session, job_id)
+            return refreshed or job
+        return job
     return await run_consolidation_job(session, job, options, summarizer=summarizer)

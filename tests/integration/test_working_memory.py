@@ -1,10 +1,9 @@
-from datetime import UTC, datetime, timedelta
+import asyncio
 from uuid import UUID
 
 import pytest
-from sqlalchemy import text
 
-from dendridb.core.database import get_session_factory
+from dendridb.config import get_settings
 
 pytestmark = pytest.mark.integration
 
@@ -101,6 +100,7 @@ async def test_patch_updates_working_memory(integration_client):
 
 @pytest.mark.asyncio
 async def test_expired_working_memory_is_hidden(integration_client):
+    settings = get_settings()
     create_response = await integration_client.post(
         "/working-memory",
         json={
@@ -108,21 +108,32 @@ async def test_expired_working_memory_is_hidden(integration_client):
             "session_id": "sess-expire",
             "key": "temp",
             "content": "will expire",
-            "ttl_seconds": 3600,
+            "ttl_seconds": 1 if settings.working_memory_backend == "redis" else 3600,
         },
     )
     item_id = UUID(create_response.json()["id"])
 
-    session_factory = get_session_factory()
-    async with session_factory() as session:
-        await session.execute(
-            text("UPDATE working_memory_items SET expires_at = :expires_at WHERE id = :item_id"),
-            {
-                "expires_at": datetime.now(UTC) - timedelta(minutes=1),
-                "item_id": item_id,
-            },
-        )
-        await session.commit()
+    if settings.working_memory_backend == "redis":
+        await asyncio.sleep(1.2)
+    else:
+        from datetime import UTC, datetime, timedelta
+
+        from sqlalchemy import text
+
+        from dendridb.core.database import get_session_factory
+
+        session_factory = get_session_factory()
+        async with session_factory() as session:
+            await session.execute(
+                text(
+                    "UPDATE working_memory_items SET expires_at = :expires_at WHERE id = :item_id"
+                ),
+                {
+                    "expires_at": datetime.now(UTC) - timedelta(minutes=1),
+                    "item_id": item_id,
+                },
+            )
+            await session.commit()
 
     list_response = await integration_client.get(
         "/working-memory",
@@ -138,4 +149,7 @@ async def test_expired_working_memory_is_hidden(integration_client):
         f"/working-memory/{item_id}",
         params={"include_expired": True},
     )
-    assert include_response.status_code == 200
+    if settings.working_memory_backend == "redis":
+        assert include_response.status_code == 404
+    else:
+        assert include_response.status_code == 200

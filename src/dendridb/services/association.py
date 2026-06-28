@@ -6,13 +6,13 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dendridb.api.schemas.association import AssociationCreate, AutoLinkRequest
+from dendridb.graph.neo4j_store import sync_association, sync_associations, traverse_related
 from dendridb.memory.auto_link import (
     build_content_similarity_candidate,
     build_metadata_match_candidate,
     content_similarity,
     metadata_overlap,
 )
-from dendridb.memory.traversal import MemoryNodeRef, TraversalEdge, traverse_related_memories
 from dendridb.models.association import MemoryAssociation
 from dendridb.models.episode import Episode
 from dendridb.models.episodic_event import EpisodicEvent
@@ -131,6 +131,7 @@ async def create_association(
     session.add(association)
     await session.commit()
     await session.refresh(association)
+    await sync_association(association)
     return association
 
 
@@ -321,18 +322,9 @@ async def auto_link_memories(
         await session.commit()
         for association in created:
             await session.refresh(association)
+        await sync_associations(created)
 
     return created, skipped
-
-
-async def _load_edges_for_namespace(
-    session: AsyncSession,
-    namespace: str,
-) -> list[MemoryAssociation]:
-    result = await session.execute(
-        select(MemoryAssociation).where(MemoryAssociation.namespace == namespace)
-    )
-    return list(result.scalars().all())
 
 
 async def get_related_memories(
@@ -348,48 +340,28 @@ async def get_related_memories(
     if not await memory_node_exists(session, node_type=source_type, node_id=source_id):
         return None
 
-    associations = await _load_edges_for_namespace(session, namespace)
-    edges = [
-        TraversalEdge(
-            association_id=association.id,
-            edge_type=association.edge_type,
-            weight=association.weight,
-            explanation=association.explanation,
-            direction="outbound",
-            from_node=MemoryNodeRef(
-                node_type=association.source_type,
-                node_id=association.source_id,
-            ),
-            to_node=MemoryNodeRef(
-                node_type=association.target_type,
-                node_id=association.target_id,
-            ),
-        )
-        for association in associations
-    ]
-
-    start = MemoryNodeRef(node_type=source_type, node_id=source_id)
-    related = traverse_related_memories(
-        start=start,
-        edges=edges,
-        max_depth=depth,
+    related = await traverse_related(
+        namespace=namespace,
+        source_type=source_type,
+        source_id=source_id,
+        depth=depth,
         min_weight=min_weight,
-    )[:limit]
-
+        limit=limit,
+    )
     items: list[dict[str, Any]] = []
     for result in related:
         summary = await _build_node_summary(
             session,
-            node_type=result.node.node_type,
-            node_id=result.node.node_id,
+            node_type=result["node_type"],
+            node_id=result["node_id"],
         )
         items.append(
             {
-                "node_type": result.node.node_type,
-                "node_id": result.node.node_id,
-                "depth": result.depth,
-                "path_weight": result.path_weight,
-                "explanation": result.explanation,
+                "node_type": result["node_type"],
+                "node_id": result["node_id"],
+                "depth": result["depth"],
+                "path_weight": result["path_weight"],
+                "explanation": result["explanation"],
                 "summary": summary,
             }
         )
