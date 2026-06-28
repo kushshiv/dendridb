@@ -13,31 +13,48 @@ tests/
 ## Running tests
 
 ```bash
-make test-unit
-make test-integration
-make test-e2e
-make test            # unit + integration
+make test              # unit + integration + e2e (requires PostgreSQL)
+make test-unit         # unit only
+make test-integration  # integration only (requires PostgreSQL)
+make test-e2e          # e2e only (requires PostgreSQL)
 ```
+
+For the full suite locally, start PostgreSQL first:
+
+```bash
+make docker-up
+make test
+```
+
+Individual targets are optional when you only need one layer.
 
 ## Integration tests
 
-Start PostgreSQL first:
-
-```bash
-make docker-up
-RUN_INTEGRATION_TESTS=1 make test-integration
-```
+Integration tests require PostgreSQL. `make test-integration` sets `RUN_INTEGRATION_TESTS=1` and runs migrations automatically.
 
 ## End-to-end tests
 
-With the full stack running:
+End-to-end tests exercise the full memory lifecycle across all milestones in one HTTP flow.
+
+**Default (ASGI + PostgreSQL)** — no separate API process required:
 
 ```bash
 make docker-up
-RUN_E2E_TESTS=1 make test-e2e
+make test-e2e
+```
+
+This runs the app in-process over HTTP against a real PostgreSQL database, the same way integration tests do, but as one orchestrated journey through every layer.
+
+**Live API (optional black-box mode)** — hits a running server:
+
+```bash
+make docker-up-all
+make test-e2e-live
 ```
 
 Optional: set `E2E_BASE_URL` (default `http://localhost:8000`).
+
+The full flow covers health probes, memory records, working memory, episodes, semantic promotion, associations, recall, consolidation, and decay/lifecycle endpoints.
 
 ## Pytest markers
 
@@ -45,11 +62,11 @@ Optional: set `E2E_BASE_URL` (default `http://localhost:8000`).
 |--------|-------|
 | `unit` | No external dependencies |
 | `integration` | Requires PostgreSQL |
-| `e2e` | Requires running API |
+| `e2e` | Requires PostgreSQL (ASGI mode) or live API (`E2E_LIVE=1`) |
 
 ## CI
 
-GitHub Actions mirrors local setup: each job runs `make setup`, then `make lint`, `make test-unit`, or `make migrate` + `make test-integration` (with a PostgreSQL service container). A Docker build check runs on every push and pull request.
+GitHub Actions runs `make lint-check`, `make test-unit`, `make test-integration`, and `make test-e2e` as separate jobs (integration and e2e each use their own PostgreSQL service). A Docker build check runs on every push and pull request.
 
 ## Writing tests
 

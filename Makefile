@@ -1,4 +1,4 @@
-.PHONY: setup dev fmt lint lint-check test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark benchmark-full consolidate decay clean migrate
+.PHONY: setup dev fmt lint lint-check test test-unit test-integration test-e2e test-e2e-live docker-up docker-up-all docker-down seed benchmark benchmark-full consolidate decay clean migrate
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -40,16 +40,20 @@ lint-check:
 	$(RUFF) format --check src tests alembic
 	$(RUFF) check src tests alembic
 
-test: test-unit test-integration
+test: test-unit test-integration test-e2e
 
 test-unit:
 	$(PYTEST) tests/unit -m "not integration and not e2e" -v
 
-test-integration:
-	$(PYTEST) tests/integration -m integration -v
+test-integration: setup migrate
+	RUN_INTEGRATION_TESTS=1 $(PYTEST) tests/integration -m integration -v
 
-test-e2e:
-	$(PYTEST) tests/e2e -m e2e -v
+test-e2e: setup migrate
+	RUN_E2E_TESTS=1 $(PYTEST) tests/e2e -m e2e -v
+
+test-e2e-live: setup
+	@echo "Requires the API running, e.g. make docker-up-all"
+	E2E_LIVE=1 RUN_E2E_TESTS=1 $(PYTEST) tests/e2e -m e2e -v
 
 docker-up:
 	docker compose up -d postgres
