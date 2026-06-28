@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     embedding_dimensions: int = Field(default=384, alias="EMBEDDING_DIMENSIONS")
     embedding_model: str = Field(default="local-hash", alias="EMBEDDING_MODEL")
 
+    decay_half_life_hours: float = Field(default=168.0, alias="DECAY_HALF_LIFE_HOURS")
+    decay_min_salience: float = Field(default=0.1, alias="DECAY_MIN_SALIENCE")
+    decay_max_salience: float = Field(default=10.0, alias="DECAY_MAX_SALIENCE")
+    retrieval_strengthen_delta: float = Field(default=0.1, alias="RETRIEVAL_STRENGTHEN_DELTA")
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def database_url(self) -> str:

@@ -9,7 +9,9 @@ app = typer.Typer(
 )
 
 consolidate_app = typer.Typer(help="Run consolidation jobs.")
+decay_app = typer.Typer(help="Run decay and forgetting jobs.")
 app.add_typer(consolidate_app, name="consolidate")
+app.add_typer(decay_app, name="decay")
 
 
 @app.command()
@@ -44,6 +46,37 @@ def consolidate_run(
                 trigger="cli",
             )
             typer.echo(f"Consolidation job {job.id} completed with status {job.status}")
+            typer.echo(job.stats)
+
+    asyncio.run(_run())
+
+
+@decay_app.command("run")
+def decay_run(
+    namespace: str = typer.Option(..., "--namespace", "-n", help="Namespace to decay"),
+    half_life_hours: float | None = typer.Option(None, "--half-life-hours"),
+    min_salience: float | None = typer.Option(None, "--min-salience"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    """Apply salience decay and archive low-value memories."""
+    from dendridb.api.schemas.decay import DecayRunRequest
+    from dendridb.core.database import get_session_factory
+    from dendridb.services.decay import start_decay
+
+    async def _run() -> None:
+        session_factory = get_session_factory()
+        async with session_factory() as session:
+            job = await start_decay(
+                session,
+                DecayRunRequest(
+                    namespace=namespace,
+                    half_life_hours=half_life_hours,
+                    min_salience=min_salience,
+                    dry_run=dry_run,
+                ),
+                trigger="cli",
+            )
+            typer.echo(f"Decay job {job.id} completed with status {job.status}")
             typer.echo(job.stats)
 
     asyncio.run(_run())

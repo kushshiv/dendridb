@@ -4,6 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dendridb.api.schemas.memory_record import MemoryRecordCreate
+from dendridb.memory.visibility import is_active_memory
 from dendridb.models.memory_record import MemoryRecord
 from dendridb.services.recall import set_memory_embedding
 
@@ -16,6 +17,7 @@ class MemoryRecordFilters:
         actor_id: str | None = None,
         memory_type: str | None = None,
         source: str | None = None,
+        active_only: bool = True,
         limit: int = 50,
         offset: int = 0,
     ) -> None:
@@ -23,6 +25,7 @@ class MemoryRecordFilters:
         self.actor_id = actor_id
         self.memory_type = memory_type
         self.source = source
+        self.active_only = active_only
         self.limit = limit
         self.offset = offset
 
@@ -36,7 +39,17 @@ def _apply_filters(query, filters: MemoryRecordFilters):
         query = query.where(MemoryRecord.memory_type == filters.memory_type)
     if filters.source is not None:
         query = query.where(MemoryRecord.source == filters.source)
+    if filters.active_only:
+        query = query.where(MemoryRecord.archived_at.is_(None))
     return query
+
+
+def _filter_active_records(records: list[MemoryRecord]) -> list[MemoryRecord]:
+    return [
+        record
+        for record in records
+        if is_active_memory(metadata=record.metadata_, archived_at=record.archived_at)
+    ]
 
 
 async def create_memory_record(
@@ -83,4 +96,7 @@ async def list_memory_records(
         .offset(filters.offset)
     )
     result = await session.execute(list_query)
-    return list(result.scalars().all()), total
+    records = list(result.scalars().all())
+    if filters.active_only:
+        records = _filter_active_records(records)
+    return records, total

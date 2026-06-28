@@ -9,6 +9,7 @@ from dendridb.api.schemas.memory_record import (
     MemoryRecordResponse,
 )
 from dendridb.core.database import get_db_session
+from dendridb.services.decay import archive_memory, pin_memory, restore_memory, unpin_memory
 from dendridb.services.memory_record import (
     MemoryRecordFilters,
     create_memory_record,
@@ -42,12 +43,69 @@ async def get_memory(
     return MemoryRecordResponse.model_validate(record)
 
 
+@router.post("/{record_id}/pin", response_model=MemoryRecordResponse)
+async def pin_memory_route(
+    record_id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+) -> MemoryRecordResponse:
+    record = await pin_memory(session, record_id)
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Memory record {record_id} not found or archived",
+        )
+    return MemoryRecordResponse.model_validate(record)
+
+
+@router.post("/{record_id}/unpin", response_model=MemoryRecordResponse)
+async def unpin_memory_route(
+    record_id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+) -> MemoryRecordResponse:
+    record = await unpin_memory(session, record_id)
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Memory record {record_id} not found",
+        )
+    return MemoryRecordResponse.model_validate(record)
+
+
+@router.post("/{record_id}/archive", response_model=MemoryRecordResponse)
+async def archive_memory_route(
+    record_id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+) -> MemoryRecordResponse:
+    record = await archive_memory(session, record_id)
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Memory record {record_id} not found or already archived",
+        )
+    return MemoryRecordResponse.model_validate(record)
+
+
+@router.post("/{record_id}/restore", response_model=MemoryRecordResponse)
+async def restore_memory_route(
+    record_id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+) -> MemoryRecordResponse:
+    record = await restore_memory(session, record_id)
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Memory record {record_id} not found or not archived",
+        )
+    return MemoryRecordResponse.model_validate(record)
+
+
 @router.get("", response_model=MemoryRecordListResponse)
 async def list_memories(
     namespace: str | None = Query(default=None),
     actor_id: str | None = Query(default=None),
     memory_type: str | None = Query(default=None),
     source: str | None = Query(default=None),
+    active_only: bool = Query(default=True),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
     session: AsyncSession = Depends(get_db_session),
@@ -57,6 +115,7 @@ async def list_memories(
         actor_id=actor_id,
         memory_type=memory_type,
         source=source,
+        active_only=active_only,
         limit=limit,
         offset=offset,
     )

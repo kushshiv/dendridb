@@ -65,6 +65,8 @@ Create a memory record.
 
 **Response:** `201 Created` with the stored record.
 
+Memory records include `pinned`, `archived_at`, and `last_retrieved_at` lifecycle fields. Embeddings are generated automatically on create.
+
 ### `GET /memories/{record_id}`
 
 Retrieve a single memory record by UUID.
@@ -83,6 +85,7 @@ List memory records with optional filters and pagination.
 | `actor_id` | string | Filter by actor |
 | `memory_type` | string | Filter by memory type |
 | `source` | string | Filter by source |
+| `active_only` | boolean | Exclude archived and merged records (default `true`) |
 | `limit` | int | Page size (1–200, default 50) |
 | `offset` | int | Offset (default 0) |
 
@@ -96,6 +99,22 @@ List memory records with optional filters and pagination.
   "offset": 0
 }
 ```
+
+### `POST /memories/{record_id}/pin`
+
+Pin a memory so decay jobs skip it. Returns `404` if the record is missing or archived.
+
+### `POST /memories/{record_id}/unpin`
+
+Remove the pin from a memory record.
+
+### `POST /memories/{record_id}/archive`
+
+Soft-archive a memory (sets `archived_at`). Archived records are excluded from recall and active listings.
+
+### `POST /memories/{record_id}/restore`
+
+Restore an archived memory back to active status.
 
 ## Working memory
 
@@ -288,7 +307,7 @@ Hybrid memory recall combining semantic similarity, recency, salience, and optio
 
 Each result includes a hybrid `score` and an `explanation` with factor values, weighted contributions, and a summary.
 
-Memory records receive embeddings automatically on create.
+Memory records receive embeddings automatically on create. Successful recall strengthens salience and updates `last_retrieved_at`. Archived and merged records are excluded from recall.
 
 ### `POST /recall/reindex`
 
@@ -320,6 +339,27 @@ Retrieve consolidation job status and stats.
 ### `GET /consolidation/jobs`
 
 List consolidation jobs with optional `namespace` filter.
+
+### `POST /decay/jobs`
+
+Run a decay job: apply salience decay based on time since last retrieval and archive memories below the minimum salience threshold.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `namespace` | string | yes | Namespace to decay |
+| `half_life_hours` | float | no | Salience half-life, defaults to `168` |
+| `min_salience` | float | no | Archive threshold, defaults to `0.1` |
+| `dry_run` | boolean | no | Simulate without writes, defaults to `false` |
+
+Pinned memories are skipped. Merged and already-archived records are ignored.
+
+### `GET /decay/jobs/{job_id}`
+
+Retrieve decay job status and stats.
+
+### `GET /decay/jobs`
+
+List decay jobs with optional `namespace` filter.
 
 ## Interactive docs
 
@@ -391,4 +431,14 @@ curl -X POST http://localhost:8000/consolidation/jobs \
 
 # Or via CLI
 dendridb consolidate run --namespace demo
+
+# Decay: archive low-salience memories
+curl -X POST http://localhost:8000/decay/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"namespace":"demo","min_salience":0.1}'
+
+curl -X POST http://localhost:8000/memories/<record-id>/pin
+
+# Or via CLI
+dendridb decay run --namespace demo
 ```
