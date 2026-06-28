@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 import typer
 
@@ -10,8 +11,10 @@ app = typer.Typer(
 
 consolidate_app = typer.Typer(help="Run consolidation jobs.")
 decay_app = typer.Typer(help="Run decay and forgetting jobs.")
+benchmark_app = typer.Typer(help="Run performance and quality benchmarks.")
 app.add_typer(consolidate_app, name="consolidate")
 app.add_typer(decay_app, name="decay")
+app.add_typer(benchmark_app, name="benchmark")
 
 
 @app.command()
@@ -78,6 +81,40 @@ def decay_run(
             )
             typer.echo(f"Decay job {job.id} completed with status {job.status}")
             typer.echo(job.stats)
+
+    asyncio.run(_run())
+
+
+@benchmark_app.command("run")
+def benchmark_run(
+    namespace: str = typer.Option("benchmark", "--namespace", "-n"),
+    smoke: bool = typer.Option(False, "--smoke", help="Run the minimal CI smoke dataset"),
+    dataset: Path | None = typer.Option(None, "--dataset", help="Path to a benchmark dataset JSON"),
+    output_dir: Path | None = typer.Option(
+        None, "--output-dir", help="Directory for JSON/Markdown reports"
+    ),
+    no_reports: bool = typer.Option(False, "--no-reports", help="Skip writing report files"),
+) -> None:
+    """Measure ingestion, recall, consolidation, and storage for a namespace."""
+    from dendridb.benchmark.runner import run_benchmark_suite
+    from dendridb.core.database import get_session_factory
+
+    async def _run() -> None:
+        session_factory = get_session_factory()
+        async with session_factory() as session:
+            result = await run_benchmark_suite(
+                session,
+                namespace=namespace,
+                smoke=smoke,
+                dataset_path=dataset,
+                output_dir=output_dir,
+                write_reports=not no_reports,
+            )
+        typer.echo(f"Benchmark {result.mode} {'passed' if result.passed else 'failed'}")
+        if result.failures:
+            for failure in result.failures:
+                typer.echo(f"- {failure}", err=True)
+            raise typer.Exit(code=1)
 
     asyncio.run(_run())
 

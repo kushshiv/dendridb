@@ -8,7 +8,7 @@ Thank you for your interest in contributing to DendriDB.
 2. Run `make setup` and `make docker-up`.
 3. Create a branch for your change.
 4. Make your changes with tests and documentation.
-5. Run `make fmt`, `make lint`, and `make test`.
+5. Run `make lint`, `make test`, and `make benchmark` when changing recall or consolidation behavior.
 6. Open a pull request with a clear description.
 
 ## Development standards

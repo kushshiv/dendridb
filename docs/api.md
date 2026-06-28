@@ -32,6 +32,14 @@ Returns service health and database connectivity status.
 | `environment` | Current environment (`development`, `test`, `production`) |
 | `checks.database` | `ok` or `unavailable` |
 
+### `GET /health/live`
+
+Process liveness probe. Returns `200 OK` with `{"status": "alive"}` when the API process is running.
+
+### `GET /health/ready`
+
+Readiness probe for orchestrators. Returns `200 OK` when PostgreSQL is reachable, or `503 Service Unavailable` when the database check fails.
+
 ### `POST /memories`
 
 Create a memory record.

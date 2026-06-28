@@ -117,8 +117,18 @@ DendriDB is built incrementally. Each milestone must be runnable, tested, and do
 - Recall excludes archived records and strengthens retrieved memories
 - Unit and integration tests
 
-## Milestone 9 — Benchmarking and hardening
+## Milestone 9 — Benchmarking and hardening ✅
 
-- Benchmark suite and production readiness
+**Goal:** Make DendriDB measurable, stable, and easier to evolve.
+
+**Delivered:**
+
+- Benchmark module with ingestion, recall, consolidation, and storage scenarios
+- Sample datasets (`benchmarks/datasets/smoke.json`, `standard.json`)
+- JSON and Markdown reports under `benchmarks/reports/`
+- CLI (`dendridb benchmark run`) and Makefile targets (`make benchmark`, `make benchmark-full`)
+- CI smoke benchmark via integration tests
+- Liveness/readiness health endpoints (`/health/live`, `/health/ready`)
+- Hardening and benchmarking documentation
 
 See [dendridb_milestone_roadmap.md](../dendridb_milestone_roadmap.md) for detailed user stories and acceptance criteria.

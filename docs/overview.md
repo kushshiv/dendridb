@@ -6,9 +6,11 @@ See also the root [dendridb_overview.md](../dendridb_overview.md) for the full p
 
 ## Current status
 
-**Milestone 8 (Forgetting and decay)** is complete. The project provides:
+**Milestone 9 (Benchmarking and hardening)** is complete. The project provides:
 
 - FastAPI HTTP API with health, memory, working memory, episodic, semantic, association, recall, consolidation, and decay endpoints
+- Liveness and readiness health probes for orchestrators
+- Benchmark suite with smoke and standard datasets, JSON/Markdown reports, and CI smoke checks
 - PostgreSQL via Docker Compose (with pgvector image for future milestones)
 - Durable records with pgvector embeddings, session-scoped working memory, episodic events, semantic facts, and memory associations
 - Configuration via environment variables
@@ -30,7 +32,7 @@ Future milestones will add:
 6. ~~Hybrid retrieval~~ ✅
 7. ~~Consolidation workers~~ ✅
 8. ~~Forgetting and decay~~ ✅
-9. Benchmarking and hardening
+9. ~~Benchmarking and hardening~~ ✅
 
 ## Who this is for
 

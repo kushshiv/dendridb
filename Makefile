@@ -1,4 +1,4 @@
-.PHONY: setup dev fmt lint lint-check test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark consolidate decay clean migrate
+.PHONY: setup dev fmt lint lint-check test test-unit test-integration test-e2e docker-up docker-up-all docker-down seed benchmark benchmark-full consolidate decay clean migrate
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -72,8 +72,11 @@ decay: setup migrate
 seed:
 	@echo "Seed data will be added in later milestones."
 
-benchmark:
-	@echo "Benchmarks will be added in later milestones."
+benchmark: setup migrate
+	$(PY) -m dendridb.cli.main benchmark run --smoke
+
+benchmark-full: setup migrate
+	$(PY) -m dendridb.cli.main benchmark run
 
 clean:
 	rm -rf $(VENV) .pytest_cache .ruff_cache .coverage htmlcov dist build *.egg-info
